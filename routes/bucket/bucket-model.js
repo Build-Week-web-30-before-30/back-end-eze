@@ -1,5 +1,6 @@
 const db = require('../../database/dbConfig');
 
+// Bucket Data Models
 const getBuckets = () => {
     const queries = [
         db('buckets'), 
@@ -103,10 +104,79 @@ const deleteABucket = (id) => {
 }
 
 
+// Todo Data Models
+const getATodo = (id) => {        
+    return Promise.all(db('todos').where(id), db('activity_links'))
+        .then(([todo, links]) => {
+            return {
+                id: todo.id,
+                todo_name: todo.todo_name,
+                completed: todo.completed ? true : false,
+                activity_links: links
+                    .filter(link => todo.id === link.todo_id)
+                    .map(link => {
+                        return {
+                            id: link.id,
+                            url: link.url
+                        }
+                    })
+            }
+        })
+}
+
+const createATodo = (todo) => {
+    return db('todos').insert(todo)
+        .then((idArr) => getATodo(idArr[0]));
+}
+
+const updateATodo = (id, changes) => {
+    return db('todos').where({ id }).update(changes)
+        .then(() => getATodo(id));
+}
+
+
+// Activity Links Data Models
+const getALink = (id) => {        
+    return db('activity_links').where(id)
+        .then(link => {
+            return {
+                id: link.id,
+                url: link.url
+            }
+        })
+}
+
+const createALink = (link) => {
+    return db('activity_links').insert(link)
+        .then((idArr) => getALink(idArr[0]));
+}
+
+
+// Comments Data Models
+const getAComment = (id) => {        
+    return db('comments').where(id)
+        .then(comment => {
+            return {
+                id: comment.id,
+                message: comment.message
+            }
+        })
+}
+
+const createAComment = (comment) => {
+    return db('comments').insert(comment)
+        .then((idArr) => getAComment(idArr[0]));
+}
+
+
 module.exports = {
-  getBuckets,
-  getABucket,
-  createABucket,
-  updateABucket,
-  deleteABucket
+    getBuckets,
+    getABucket,
+    createALink,
+    createATodo,
+    createABucket,
+    createAComment,
+    updateATodo,
+    updateABucket,
+    deleteABucket
 }
