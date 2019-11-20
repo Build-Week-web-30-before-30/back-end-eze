@@ -1,80 +1,71 @@
-const express = require('express');
+const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const db = require('./auth-model');
 
-const router = express.Router();
+router.post('/register', validateCredentials, (req, res) => {
+    const { userName, password } = req.body;
+    const hash = bcrypt.hashSync(password, 11);
 
-router.post('/register', validateUserBody, (req, res, next) => {
-  const { username, password, department } = req.body;
-  const hashedPassword = bcrypt.hashSync(password, 11);
-
-  db.add({ username, password: hashedPassword, department }).then(user => {
-    res.status(201).json('New user created');
-  }).catch(next);
+    db.getUser(userName)
+        .then(user => {
+            if (user) {
+                res.status(401).json({ message: "User already exists" });
+            } else {
+                db.addUser({ ...req.body, password: hash })
+                    .then((user) => {
+                        res.status(201).json(user);
+                    })
+                    .catch(error => {
+                        res.status(500).json(error);
+                    });
+            }
+        })
+        .catch(() => {
+            res.status(401).json({ message: "No user found" });
+        });
 });
 
-router.post('/login', validateUserLogin, (req, res, next) => {
-  const { username, password } = req.body;
+router.post('/login', validateCredentials, (req, res) => {
+    const { userName, password } = req.body;
 
-  db.getUser({ username }).then(user => {
-    if (!user) {
-      next({ message: "Invalid credentials", status: 401 });
-    } else {
-      const isValidPassword = bcrypt.compareSync(password, user.password);
-      if (!isValidPassword) {
-        next({ message: "Invalid credentials", status: 401 });
-      } else {
-        const token = generateToken(user);
-        res.status(200).json({ token });
-      }
-    }
-  }).catch(next);
+    db.getUser(userName)
+        .then(user => {
+            if (user && bcrypt.compareSync(password, user.password)) {
+                const token = generateToken(user);
+                res.status(200).json({ token });
+            } else {
+                res.status(401).json({ message: "Invalid credentials" });
+            }
+        })
+        .catch((error) => {
+            res.status(401).json(error);
+        });
 });
 
-function validateUserBody(req, res, next) {
-  const { username, password, department } = req.body;
-  if (!username || !password || !department) {
-    next({ message: 'Missing one of the required `username`, `password` or `department` fields!', status: 401 });
-  } else {
-    req.body = { username, password, department };
-    next();
-  }
-}
 
-function validateUserLogin(req, res, next) {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    next({ message: 'Missing one of the required `username` or `password` fields!', status: 401 });
+//Middleware
+function validateCredentials(req, res, next) {
+  const { userName, password } = req.body;
+  if (!userName || !password) {
+    res.status(401).json({ message: "username and password required" });
   } else {
-    req.body = { username, password };
     next();
   }
 }
 
 function generateToken(user) {
-  return jwt.sign(
-    {
-      subject: user.id,
-      username: user.username,
-      department: user.department
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: '1d',
-    }
-  );
+    return jwt.sign(
+        {
+            subject: user.id,
+            userName: user.userName
+        },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: '1d',
+        }
+    );
 }
-
-router.use((error, req, res) => {
-  res.status(error.status || 500).json({
-    file: './auth/router',
-    method: req.method,
-    url: req.url,
-    status: error.status || 500,
-    message: error.message
-  }).end();
-})
 
 module.exports = router;
