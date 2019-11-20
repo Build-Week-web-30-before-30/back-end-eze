@@ -24,7 +24,14 @@ const createATodo = (todo) => {
         .then((idArr) => getATodo(idArr[0]));
 }
 
+const updateATodo = (id, changes) => {
+    return db('todos').where({ id }).update(changes)
+        .then(() => getATodo(id));
+}
+
 
 module.exports = {
-  createATodo,
+    getATodo,
+    createATodo,
+    updateATodo
 }
