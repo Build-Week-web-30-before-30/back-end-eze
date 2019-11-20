@@ -1,8 +1,5 @@
 const db = require('../../database/dbConfig');
 
-// User can create a new bucket. Protected - name, links
-// User can edit bucket. 
-
 const getBuckets = () => {
     const queries = [
         db('buckets'), 
@@ -79,7 +76,7 @@ const getABucket = (id) => {
                                     }
                                 })
                         }
-                }),
+                    }),
                 comments: comments
                     .map(comment => {
                         return {
@@ -91,8 +88,25 @@ const getABucket = (id) => {
         })
 }
 
+const createABucket = (bucket) => {
+    return db('buckets').insert(bucket)
+        .then((idArr) => getABucket(idArr[0]));
+}
+
+const updateABucket = (id, changes) => {
+    return db('buckets').where({ id }).update(changes)
+        .then(() => getABucket(id));
+}
+
+const deleteABucket = (id) => {
+    return db('buckets').where({ id }).del();
+}
+
 
 module.exports = {
   getBuckets,
-  getABucket
+  getABucket,
+  createABucket,
+  updateABucket,
+  deleteABucket
 }
