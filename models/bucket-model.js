@@ -1,4 +1,4 @@
-const db = require('../../database/dbConfig');
+const db = require('../database/dbConfig');
   
 function find() {
     return db('buckets').select('id', 'name', 'public', 'user_id');

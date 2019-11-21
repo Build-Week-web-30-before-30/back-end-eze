@@ -1,8 +1,8 @@
 const express = require('express');
-const verifyToken = require('../../middleware/verifyToken')
-const bucketsDB = require('./bucket-model');
-const todosDB = require('../todos/todo-model');
-const linksDB = require('../links/link-model');
+const verifyToken = require('../middleware/verifyToken')
+const bucketsDB = require('../models/bucket-model');
+const todosDB = require('../models/todo-model');
+const linksDB = require('../models/link-model');
 
 const router = express.Router();
 
