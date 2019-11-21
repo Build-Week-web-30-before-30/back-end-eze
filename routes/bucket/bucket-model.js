@@ -24,7 +24,7 @@ async function add(newBucket) {
     return findById(id);
 }
   
-async function addFeedback(newComment) {
+async function addComment(newComment) {
     const [ id ] = await db('comments').insert(newComment);
 
     return findCommentById(id);
@@ -50,7 +50,7 @@ module.exports = {
     findPublic,
     findById,
     findCommentById,
-    addFeedback,
+    addComment,
     getBucketComments,
     modify
 };
