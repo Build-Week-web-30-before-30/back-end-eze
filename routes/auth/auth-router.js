@@ -11,7 +11,6 @@ router.post('/register', validateCredentials, (req, res) => {
 
     db.addUser({ ...req.body, password: hash })
         .then((user) => {
-            console.log(user)
             res.status(201).json(user);
         })
         .catch(error => {

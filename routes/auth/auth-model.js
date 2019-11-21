@@ -1,15 +1,11 @@
 const db = require('../../database/dbConfig');
 
+
 const getUser = (filter) => {
-    return db('users').where({id: filter}).first()
-        .then(user => {
-            return {
-                id: user.id,
-                username: user.username,
-                email: user.email,
-                full_name: user.full_name,
-            }
-        });
+    return db('users')
+        .select("id", "username", "email", "full_name")
+        .where({id: filter})
+        .first()
 }
 
 const addUser = (user) => {
