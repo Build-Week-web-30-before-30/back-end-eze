@@ -8,10 +8,10 @@ const db = require('./auth-model');
 router.post('/register', validateCredentials, (req, res) => {
     const { password } = req.body;
     const hash = bcrypt.hashSync(password, 11);
-    console.log(req.body);
 
     db.addUser({ ...req.body, password: hash })
         .then((user) => {
+            console.log(user)
             res.status(201).json(user);
         })
         .catch(error => {
