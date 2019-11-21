@@ -2,40 +2,44 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+
 const db = require('./auth-model');
 
-
-router.post('/register', validateCredentials, (req, res) => {
-    const { password } = req.body;
-    const hash = bcrypt.hashSync(password, 11);
-
-    db.addUser({ ...req.body, password: hash })
-        .then((user) => {
-            console.log(user)
-            res.status(201).json(user);
+router.post('/register', (req, res) => {
+    let user = req.body;
+    const hash = bcrypt.hashSync(user.password, 10);
+    user.password = hash;
+  
+    db.add(user)
+        .then(() => {
+            res.status(201).json({message: 'sign up successful'});
         })
         .catch(error => {
-            res.status(500).json({message: error.message});
+            res.status(500).json(error);
         });
 });
-
+  
 router.post('/login', validateCredentials, (req, res) => {
-    const { username, password } = req.body;
+    let { username, password } = req.body;
 
-    db.getUser(username)
+    db.findBy({ username }).first()
         .then(user => {
             if (user && bcrypt.compareSync(password, user.password)) {
                 const token = generateToken(user);
-                res.status(200).json({ token });
+
+                res.status(200).json({
+                    message: `Welcome ${user.username}!`,
+                    token: token
+                });
             } else {
-                res.status(401).json({ message: "Invalid credentials" });
+                res.status(401).json({ message: 'Invalid Credentials' });
             }
         })
-        .catch((error) => {
-            res.status(401).json(error);
+        .catch(error => {
+            res.status(500).json({req: req.body, error: error.message});
         });
 });
-
+  
 
 //Middleware
 function validateCredentials(req, res, next) {
