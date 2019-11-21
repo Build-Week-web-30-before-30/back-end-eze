@@ -8,20 +8,21 @@ const db = require('./auth-model');
 router.post('/register', validateCredentials, (req, res) => {
     const { password } = req.body;
     const hash = bcrypt.hashSync(password, 11);
+    console.log(req.body);
 
     db.addUser({ ...req.body, password: hash })
         .then((user) => {
             res.status(201).json(user);
         })
         .catch(error => {
-            res.status(500).json(error);
+            res.status(500).json({message: error.message});
         });
 });
 
 router.post('/login', validateCredentials, (req, res) => {
-    const { userName, password } = req.body;
+    const { username, password } = req.body;
 
-    db.getUser(userName)
+    db.getUser(username)
         .then(user => {
             if (user && bcrypt.compareSync(password, user.password)) {
                 const token = generateToken(user);
@@ -38,29 +39,13 @@ router.post('/login', validateCredentials, (req, res) => {
 
 //Middleware
 function validateCredentials(req, res, next) {
-    const { userName, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!userName || !password) {
+    if (!username || !password) {
         res.status(401).json({ message: "username and password required" });
     } else {
         next();
     }
-}
-
-function doesUserExist(req, res, next) {
-    const { userName } = req.body;
-
-    db.getUser(userName)
-        .then((user) => {
-            if(user) {
-                res.status(401).json({ message: "User already exists" });
-            } else {
-                next();
-            }
-        })
-        .catch(() => {
-            res.status(401).json({ message: "No user found" });
-        });
 }
 
 function generateToken(user) {
