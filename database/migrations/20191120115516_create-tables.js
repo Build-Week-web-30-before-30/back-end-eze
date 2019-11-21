@@ -52,7 +52,7 @@ exports.up = function(knex) {
 exports.down = function(knex) {
     return knex.schema
         .dropTableIfExists('comments')
-        .dropTableIfExists('links')
+        .dropTableIfExists('activity_links')
         .dropTableIfExists('todos')
         .dropTableIfExists('buckets')
         .dropTableIfExists('users')
