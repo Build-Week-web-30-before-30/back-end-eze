@@ -4,26 +4,17 @@ const jwt = require('jsonwebtoken');
 
 const db = require('./auth-model');
 
-router.post('/register', validateCredentials, (req, res) => {
-    const { userName, password } = req.body;
+
+router.post('/register', validateCredentials, doesUserExist, (req, res) => {
+    const { password } = req.body;
     const hash = bcrypt.hashSync(password, 11);
 
-    db.getUser(userName)
-        .then(user => {
-            if (user) {
-                res.status(401).json({ message: "User already exists" });
-            } else {
-                db.addUser({ ...req.body, password: hash })
-                    .then((user) => {
-                        res.status(201).json(user);
-                    })
-                    .catch(error => {
-                        res.status(500).json(error);
-                    });
-            }
+    db.addUser({ ...req.body, password: hash })
+        .then((user) => {
+            res.status(201).json(user);
         })
-        .catch(() => {
-            res.status(401).json({ message: "No user found" });
+        .catch(error => {
+            res.status(500).json(error);
         });
 });
 
@@ -47,12 +38,29 @@ router.post('/login', validateCredentials, (req, res) => {
 
 //Middleware
 function validateCredentials(req, res, next) {
-  const { userName, password } = req.body;
-  if (!userName || !password) {
-    res.status(401).json({ message: "username and password required" });
-  } else {
-    next();
-  }
+    const { userName, password } = req.body;
+
+    if (!userName || !password) {
+        res.status(401).json({ message: "username and password required" });
+    } else {
+        next();
+    }
+}
+
+function doesUserExist(req, res, next) {
+    const { userName } = req.body;
+
+    db.getUser(userName)
+        .then((user) => {
+            if(user) {
+                res.status(401).json({ message: "User already exists" });
+            } else {
+                next();
+            }
+        })
+        .catch(() => {
+            res.status(401).json({ message: "No user found" });
+        });
 }
 
 function generateToken(user) {
