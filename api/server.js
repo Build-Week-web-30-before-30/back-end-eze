@@ -16,7 +16,7 @@ server.use('/api/buckets', bucketsRouter);
 server.use('/api/users', userRouter);
 
 server.get('/', (req, res) => {
-    res.json({message: "Welcome to 30 before 30 API"})
+    res.status(200).json({message: "Welcome to the 30 before 30 API"})
 })
 
 module.exports = server;
