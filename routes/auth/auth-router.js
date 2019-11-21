@@ -5,12 +5,13 @@ const jwt = require('jsonwebtoken');
 const db = require('./auth-model');
 
 
-router.post('/register', validateCredentials, doesUserExist, (req, res) => {
+router.post('/register', validateCredentials, (req, res) => {
     const { password } = req.body;
     const hash = bcrypt.hashSync(password, 11);
 
     db.addUser({ ...req.body, password: hash })
         .then((user) => {
+            console.log(user)
             res.status(201).json(user);
         })
         .catch(error => {
