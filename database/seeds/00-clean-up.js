@@ -3,9 +3,9 @@ const cleaner = require('knex-cleaner');
 exports.seed = function(knex) {
   return knex('comments').truncate()
     .then(() => {
-      return knex('activity_links').truncate()
+      return knex('todos').truncate()
         .then(() => {
-          return knex('todos').truncate()
+          return knex('activity_links').truncate()
             .then(() => {
               return knex('buckets').truncate()
                 .then(() => {
