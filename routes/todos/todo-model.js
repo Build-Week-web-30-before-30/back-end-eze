@@ -9,7 +9,7 @@ function getByBucket(bucket_id) {
 }
 
 function getTodoById(id) {
-    return db('todos').where({id: id});
+    return db('todos').where({id: id}).first();
 }
 
 async function add(todo) {

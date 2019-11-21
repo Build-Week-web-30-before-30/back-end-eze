@@ -1,11 +1,11 @@
 const db = require('../../database/dbConfig');
   
 function find() {
-    return db('board').select('id', 'name', 'public', 'user_id');
+    return db('buckets').select('id', 'name', 'public', 'user_id');
 }
   
 function findPublic() {
-    return db('board').where({ visibility: true });
+    return db('buckets').where({ visibility: true });
 }
 
 function findById(id) {
@@ -31,17 +31,17 @@ async function addComment(newComment) {
 }
 
 async function getBucketComments(bucket_id) {
-    const feedbacks = await db('feedback').where({ bucket_id: bucket_id });
+    const comments = await db('comments').where({ bucket_id: bucket_id });
 
-    return feedbacks;
+    return comments;
 }
   
-async function modify(board_id, changes) {
-    await db('board')
+async function modify(bucket_id, changes) {
+    await db('buckets')
         .update(changes)
-        .where({ id: board_id })
+        .where({ id: bucket_id })
 
-    return findById(board_id);
+    return findById(bucket_id);
 }
 
 module.exports = {

@@ -56,7 +56,7 @@ function generateToken(user) {
     return jwt.sign(
         {
             subject: user.id,
-            userName: user.userName
+            username: user.username
         },
         process.env.JWT_SECRET,
         {

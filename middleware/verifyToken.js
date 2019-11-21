@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
     if(token) {
         jwt.verify(
             token,
-            'secret key',
+            process.env.JWT_SECRET,
             (err, decodedToken) => {
                 if(err) {
                     res.status(401).json({ message: `Access Denied`});
