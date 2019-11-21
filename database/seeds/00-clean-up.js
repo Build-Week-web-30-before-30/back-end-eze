@@ -1,15 +1,15 @@
 const cleaner = require('knex-cleaner');
 
 exports.seed = function(knex) {
-  return knex('users').truncate()
+  return knex('comments').truncate()
     .then(() => {
-      return knex('buckets').truncate()
+      return knex('activity_links').truncate()
         .then(() => {
           return knex('todos').truncate()
             .then(() => {
-              return knex('activity_links').truncate()
+              return knex('buckets').truncate()
                 .then(() => {
-                    return knex('comments').truncate()
+                    return knex('users').truncate()
                         .then(() => {
                             return cleaner.clean(knex, {
                                 mode: 'truncate',
