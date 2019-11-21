@@ -1,5 +1,5 @@
 const express = require('express');
-const verifyToken = require('../middleware/verifyToken')
+const authenticate = require('../middleware/authenticate')
 const bucketsDB = require('../models/bucket-model');
 const todosDB = require('../models/todo-model');
 const linksDB = require('../models/link-model');
@@ -25,7 +25,7 @@ router.route('/')
             res.status(500).json({ message: 'failed to get public buckets'})
         }
     })
-    .post(verifyToken, async (req, res) => {
+    .post(authenticate, async (req, res) => {
         try {
             const bucket = await bucketsDB.add(req.body);
 
@@ -60,7 +60,7 @@ router.route('/:id')
             res.status(500).json({ message: 'failed to get single public bucket'})
         }
     })
-    .put(verifyToken, async (req, res) => {
+    .put(authenticate, async (req, res) => {
         try {
             const bucket = await bucketsDB.modify(req.params.id, req.body);
 
@@ -91,7 +91,7 @@ router.route('/:id/comments')
             res.status(500).json({ message: `failed to fetch comment for bucket ${req.params.id}`})
         }
     })
-    .post(verifyToken, async (req, res) => {
+    .post(authenticate, async (req, res) => {
         try {
             const newComment = {
                 bucket_id: req.params.id,
@@ -127,7 +127,7 @@ router.route('/:id/todos')
             res.status(500).json({ message: 'failed to get todos for this bucket'})
         }
     })
-    .post(verifyToken, async (req, res) => {
+    .post(authenticate, async (req, res) => {
         try {
             const newTodo = ({
                 todo_name: req.body.todo_name,
@@ -166,7 +166,7 @@ router.route('/:id/todos/:todo_id')
             res.status(500).json({ message: 'failed to get single todo'})
         }
     })
-    .put(verifyToken, async (req, res) => {
+    .put(authenticate, async (req, res) => {
         try {
             const todo = await todosDB.modify(req.params.todo_id, req.body);
 
@@ -202,7 +202,7 @@ router.route('/:id/todos/:todo_id/links')
             res.status(500).json({ message: 'failed to get links for this todo'})
         }
     })
-    .post(verifyToken, async (req, res) => {
+    .post(authenticate, async (req, res) => {
         try {
             const newLink = ({
                 url: req.body.url,

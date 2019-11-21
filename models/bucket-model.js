@@ -1,8 +1,5 @@
 const db = require('../database/dbConfig');
   
-function find() {
-    return db('buckets').select('id', 'name', 'public', 'user_id');
-}
   
 function findPublic() {
     return db('buckets').where({ visibility: true });
@@ -13,6 +10,7 @@ function findById(id) {
         .where({ id })
         .first();
 }
+
 
 function findCommentById(id) {
     return db('comments').where({ id }).first();
@@ -28,6 +26,10 @@ async function addComment(newComment) {
     const [ id ] = await db('comments').insert(newComment);
 
     return findCommentById(id);
+}
+
+function getByUser(id) {
+    return db('buckets').where({user_id: id});
 }
 
 async function getBucketComments(bucket_id) {
@@ -46,11 +48,11 @@ async function modify(bucket_id, changes) {
 
 module.exports = {
     add,
-    find,
     findPublic,
     findById,
     findCommentById,
     addComment,
+    getByUser,
     getBucketComments,
     modify
 };

@@ -1,8 +1,5 @@
 const db = require('../database/dbConfig.js');
 
-function getAll() {
-    return db('todos');
-}
 
 function getByBucket(bucket_id) {
     return db('todos').where({bucket_id: bucket_id});
@@ -30,6 +27,5 @@ module.exports = {
     add,
     modify,
     getByBucket,
-    getAll,
     getTodoById
 };

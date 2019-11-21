@@ -2,8 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-
-const db = require('../models/auth-model');
+const db = require('../models/user-model');
 
 router.post('/register', (req, res) => {
     let user = req.body;
@@ -19,7 +18,7 @@ router.post('/register', (req, res) => {
         });
 });
   
-router.post('/login', validateCredentials, (req, res) => {
+router.post('/login', (req, res) => {
     let { username, password } = req.body;
 
     db.findBy({ username }).first()
@@ -39,18 +38,6 @@ router.post('/login', validateCredentials, (req, res) => {
             res.status(500).json({req: req.body, error: error.message});
         });
 });
-  
-
-//Middleware
-function validateCredentials(req, res, next) {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-        res.status(401).json({ message: "username and password required" });
-    } else {
-        next();
-    }
-}
 
 function generateToken(user) {
     return jwt.sign(
