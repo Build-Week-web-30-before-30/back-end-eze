@@ -11,7 +11,7 @@ router.post('/register', (req, res) => {
   
     db.add(user)
         .then(() => {
-            res.status(201).json(user);
+            res.status(201).json({message: 'sign up successful'});
         })
         .catch(error => {
             res.status(500).json(error);

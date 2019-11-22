@@ -12,7 +12,7 @@ exports.up = function(knex) {
             table.increments('id');
             table.string('bucket_name', 255).notNullable();
             table.boolean('visibility').defaultTo(0);
-            table.date('deadline').notNullable();
+            table.string('deadline').notNullable();
             table.integer('user_id')
                 .unsigned()
                 .notNullable()
