@@ -6,7 +6,7 @@ exports.up = function(knex) {
             table.string('username', 255).notNullable().unique();
             table.string('email', 255).notNullable().unique();
             table.string('full_name', 255).notNullable();
-            table.string('password', 50).notNullable()
+            table.string('password', 255).notNullable()
         })
         .createTable('buckets', table => {
             table.increments('id');
@@ -52,7 +52,7 @@ exports.up = function(knex) {
 exports.down = function(knex) {
     return knex.schema
         .dropTableIfExists('comments')
-        .dropTableIfExists('links')
+        .dropTableIfExists('activity_links')
         .dropTableIfExists('todos')
         .dropTableIfExists('buckets')
         .dropTableIfExists('users')
